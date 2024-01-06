@@ -446,12 +446,27 @@ impl ValidatorHistory {
 }
 
 #[cfg(test)]
-mod tests {
+mod layout_tests {
     use super::*;
+    use static_assertions::assert_fields;
+    use std::mem::{align_of, size_of};
 
-    // Utility test to see struct layout
     #[test]
     fn test_validator_history_layout() {
-        println!("{}", ValidatorHistoryEntry::type_layout());
+        assert_fields!(
+            ValidatorHistory,
+            struct_version: u32,
+            vote_account: Pubkey,ValidatorHistory,
+            index: u32,
+            bump: u8,
+            _padding0: [u8; 7],
+            last_ip_timestamp: u64,
+            last_version_timestamp: u64,
+            _padding1: [u8; 232],
+            history: CircBuf,
+        );
+
+        assert_eq!(size_of::<ValidatorHistory>(), 65848);
+        assert_eq!(align_of::<ValidatorHistory>(), 8);
     }
 }
